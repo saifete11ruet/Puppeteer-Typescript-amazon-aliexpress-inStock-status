@@ -1,0 +1,18 @@
+{
+  "name": "regardin-crawler-crone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Devech",
+  "license": "ISC",
+  "dependencies": {
+    "node-schedule": "^2.0.0",
+    "puppeteer": "^10.2.0",
+    "puppeteer-extra": "^3.1.18",
+    "puppeteer-extra-plugin-stealth": "^2.7.8",
+    "user-agents": "^1.0.770"
+  }
+}
