@@ -1,2 +1,3 @@
 yarn install
+
 node index
