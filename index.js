@@ -1,75 +1,47 @@
-const schedule = require("node-schedule");
-const userAgent = require("user-agents");
-const puppeteer = require("puppeteer-extra");
-// add stealth plugin and use defaults (all evasion techniques)
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-puppeteer.use(StealthPlugin());
-
-const urlAliExpress =
-  "https://www.aliexpress.com/item/1005001375604489.html?spm=a2g0o.productlist.0.0.11e67e0391P60o&algo_pvid=7d753413-ec1d-4a76-864e-e0adaad8aed0&algo_expid=7d753413-ec1d-4a76-864e-e0adaad8aed0-13&btsid=2100bde116134847808776634e2075&ws_ab_test=searchweb0_0,searchweb201602_,searchweb201603_";
-
-const urlAmazon =
-  "https://www.amazon.es/Relaxdays-Tienda-Exterior-Interior-10022461/dp/B07B8VPM15?&linkCode=sl1&tag=regaladin-21&linkId=5a01555752c1235f513a8ec026782a21&language=es_ES&ref_=as_li_ss_tl";
-
-// run cron job every midnight 12 am
-schedule.scheduleJob("0 0 * * *", async function () {
-  const browser = await puppeteer.launch({
-    headless: true,
-    // waitUntil: "networkidle0",
-    timeout: 0,
-    userDataDir: "./temp", // Vey Very Important
-  });
-  // const page = await browser.newPage();
-  const context = await browser.createIncognitoBrowserContext();
-  const page = await context.newPage();
-
-  try {
-    await page.setRequestInterception(true);
-    await page.on("request", (req) => {
-      if (
-        req.resourceType() == "stylesheet" ||
-        req.resourceType() == "font" ||
-        req.resourceType() == "image"
-      ) {
-        req.abort();
-      } else {
-        req.continue();
-      }
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
-    await page.setUserAgent(userAgent.toString());
-
-    // In stock status for Ali Express
-    await page.goto(urlAliExpress);
-    const inStockAliExpress = await page.evaluate(() => {
-      const inStock = document.querySelector(".product-quantity-tip span span");
-      const inStockQuantity =
-        inStock && inStock.innerHTML ? inStock.innerHTML.replace(/ .*/, "") : 0;
-      return inStockQuantity;
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+exports.__esModule = true;
+var schedule = require("node-schedule");
+schedule.scheduleJob("/10 * * * * *", function () {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            console.log("Hi");
+            return [2 /*return*/];
+        });
     });
-    console.log(inStockAliExpress);
-
-    //Update Database code here
-
-    // In stock status for Amazon
-    await page.goto(urlAmazon);
-    const inStockAmazon = await page.evaluate(() => {
-      const inStock = document.querySelector("#availability span");
-      const inStockQuantity =
-        inStock &&
-        inStock.innerHTML &&
-        inStock.innerHTML.replace(/(\r\n|\n|\r)/gm, "") == "En stock." // This will work for spanish version only.
-          ? true
-          : false;
-      return inStockQuantity;
-    });
-    console.log(inStockAmazon);
-
-    //Update Database code here
-  } catch (error) {
-    console.log(error);
-  } finally {
-    await page.close();
-    await context.close();
-    await browser.close();
-  }
 });

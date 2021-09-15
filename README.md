@@ -1,3 +1,3 @@
 yarn install
 
-node index
+yarn test
